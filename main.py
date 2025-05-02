@@ -9,18 +9,19 @@ from shot import Shot
 
 def main():
     pygame.init()
+    pygame.font.init()
+    font = pygame.font.SysFont(None, 36)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("My Game")
+    pygame.display.set_caption("Astroids")
     clock = pygame.time.Clock()
     dt = 0
+    score = 0
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
 
-
-    
     Player.containers = updatable, drawable
     Asteroid.containers = asteroids, updatable, drawable
     AsteroidField.containers = updatable
@@ -29,40 +30,38 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
 
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-            
+
         updatable.update(dt)
+
+        for asteroid in asteroids:
+            if player.collides_with(asteroid):
+                print(f"Game Over! Final Score: {score}!")
+                pygame.quit()
+                sys.exit()
+
+        for asteroid in list(asteroids):  # safe to modify group
+            for shot in list(shots):
+                if shot.collides_with(asteroid):
+                    asteroid.split()
+                    shot.kill()
+                    score += 100
+
         screen.fill((0, 0, 0))
 
         for obj in drawable:
             obj.draw(screen)
 
+        # Draw score AFTER everything else
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        text_rect = score_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+        screen.blit(score_text, text_rect)
+
         pygame.display.flip()
         dt = clock.tick(60) / 1000
-
-
-
-        for asteroid in asteroids:
-            if player.collides_with(asteroid):
-                print("Game Over!")
-                pygame.quit
-                sys.exit()
-
-        for asteroid in asteroids:
-            for shot in shots:
-                if shot.collides_with(asteroid):
-                    asteroid.split()
-                    shot.kill()
-
-        for obj in drawable:
-            obj.draw(screen)
-
-
-
 
 
 if __name__ == "__main__":
