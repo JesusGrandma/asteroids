@@ -14,6 +14,8 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Astroids")
     clock = pygame.time.Clock()
+    background = pygame.image.load("assets/space.png")
+    background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
     dt = 0
     score = 0
     lives = 3
@@ -59,6 +61,8 @@ def main():
                     score += 100
 
         screen.fill((0, 0, 0))
+
+        screen.blit(background, (0, 0))
 
         for obj in drawable:
             obj.draw(screen)
